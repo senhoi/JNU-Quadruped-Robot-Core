@@ -18,6 +18,22 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="RC.h" />
+    <ClInclude Include="src\usr_lib\CMAT\cmat.h" />
+    <ClInclude Include="src\usr_lib\TP\TP_polynomial.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\usr_lib\CMAT\arithmetic.c" />
+    <ClCompile Include="src\usr_lib\CMAT\init.c" />
+    <ClCompile Include="src\usr_lib\CMAT\operations.c" />
+    <ClCompile Include="src\usr_lib\CMAT\robotic_tools.c" />
+    <ClCompile Include="src\usr_lib\CMAT\special_matrices.c" />
+    <ClCompile Include="src\usr_lib\CMAT\utils.c" />
+    <ClCompile Include="src\usr_lib\CMAT\views.c" />
+    <ClCompile Include="src\usr_lib\RC\RC.c" />
+    <ClCompile Include="src\usr_lib\TP\TP_polynomial.c" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{C1C3CC29-5E38-4291-A0B2-4B7F29FA6DB6}</ProjectGuid>
@@ -84,11 +100,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -146,19 +162,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="QuadrupedRobotCore.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

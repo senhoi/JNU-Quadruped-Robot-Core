@@ -13,21 +13,63 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\CMAT">
+      <UniqueIdentifier>{0b0a4c59-cc5b-45d8-9bdd-c99ef2c552c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\RC">
+      <UniqueIdentifier>{985c590d-cb84-4a13-96b3-00482a7584ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\TP">
+      <UniqueIdentifier>{87e78092-bf7e-4882-a876-c267a6587ab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\CMAT">
+      <UniqueIdentifier>{ce71570d-2aae-4068-b104-b719c9d5d198}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\RC">
+      <UniqueIdentifier>{7e117862-dbf1-4406-843f-a634fc142b59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\TP">
+      <UniqueIdentifier>{2ce0e763-27de-4e8a-b85b-e5768972adc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="src\usr_lib\CMAT\cmat.h">
+      <Filter>头文件\CMAT</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="RC.h">
+      <Filter>头文件\RC</Filter>
+    </ClInclude>
+    <ClInclude Include="src\usr_lib\TP\TP_polynomial.h">
+      <Filter>头文件\TP</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\usr_lib\CMAT\views.c">
+      <Filter>源文件\CMAT</Filter>
     </ClCompile>
-    <ClCompile Include="QuadrupedRobotCore.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="src\usr_lib\CMAT\utils.c">
+      <Filter>源文件\CMAT</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usr_lib\CMAT\special_matrices.c">
+      <Filter>源文件\CMAT</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usr_lib\CMAT\operations.c">
+      <Filter>源文件\CMAT</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usr_lib\CMAT\init.c">
+      <Filter>源文件\CMAT</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usr_lib\CMAT\arithmetic.c">
+      <Filter>源文件\CMAT</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usr_lib\RC\RC.c">
+      <Filter>源文件\RC</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usr_lib\TP\TP_polynomial.c">
+      <Filter>源文件\TP</Filter>
+    </ClCompile>
+    <ClCompile Include="src\usr_lib\CMAT\robotic_tools.c">
+      <Filter>源文件\CMAT</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
