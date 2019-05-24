@@ -34,7 +34,9 @@ void RC_Init_Robot(RC_Robot_t *pRoobt, char *type, float offset, float length1, 
 	cmat_multiply_multi(pRoobt->Mat.Base[RC_LEG_RH], 3, m_t, m_ry, m_rz);
 	cmat_free(m_t);
 
-	cmat_free_multi(2, m_ry, m_rz);
+	//cmat_free_multi(2, m_ry, m_rz);
+	cmat_free(m_ry);
+	cmat_free(m_rz);
 }
 
 void RC_Init_MovPara(RC_Robot_t *pRoobt, char *gait, double cycle, double interval, double dutyratio,
@@ -76,13 +78,19 @@ void RC_Init_MovPara(RC_Robot_t *pRoobt, char *gait, double cycle, double interv
 	m_t = cmat_se3(body_x, body_y, body_z);
 	pRoobt->Mat.RefFrm2BodyFrm = cmat_malloc(4, 4);
 	cmat_multiply_multi(pRoobt->Mat.RefFrm2BodyFrm, 4, m_t, m_rx, m_ry, m_rz);
-	cmat_free_multi(4, m_t, m_rx, m_ry, m_rz);
+	//cmat_free_multi(4, m_t, m_rx, m_ry, m_rz);
+	cmat_free(m_t);
+	cmat_free(m_rx);
+	cmat_free(m_ry);
+	cmat_free(m_rz);
 
 	m_rx = cmat_se3_rx(pos_roll);
 	m_ry = cmat_se3_ry(pos_pitch);
 	pRoobt->Mat.RefFrm2PosFrm = cmat_malloc(4, 4);
 	cmat_multiply_multi(pRoobt->Mat.RefFrm2PosFrm, 2, m_rx, m_ry);
-	cmat_free_multi(2, m_rx, m_ry);
+	//cmat_free_multi(2, m_rx, m_ry);
+	cmat_free(m_rx);
+	cmat_free(m_ry);
 
 	pRoobt->Mat.BodyFrm2LegFrm[RC_LEG_LF] = pRoobt->Mat.Base[RC_LEG_LF];
 	pRoobt->Mat.BodyFrm2LegFrm[RC_LEG_LH] = pRoobt->Mat.Base[RC_LEG_LH];
@@ -147,6 +155,9 @@ void RC_Update_ZeroPara(RC_Robot_t *pRoobt,
 	pRoobt->Zero.centre_x = zero_x;
 	pRoobt->Zero.centre_y = zero_y;
 
+	for (int i = 0; i < 4; i++)
+		cmat_free(pRoobt->Mat.PosFrm2ZeroFrm[i]);
+
 	pRoobt->Mat.PosFrm2ZeroFrm[RC_LEG_LF] = cmat_se3(zero_x + zero_l / 2, zero_y + zero_w / 2, 0);
 	pRoobt->Mat.PosFrm2ZeroFrm[RC_LEG_LH] = cmat_se3(zero_x - zero_l / 2, zero_y + zero_w / 2, 0);
 	pRoobt->Mat.PosFrm2ZeroFrm[RC_LEG_RF] = cmat_se3(zero_x + zero_l / 2, zero_y - zero_w / 2, 0);
@@ -197,7 +208,7 @@ void RC_Calc_FootTraj__(RC_Robot_t *pRoobt, double phase, double *pos_x, double 
 
 }
 
-matrix_t* RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_)
+matrix_t* RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle)
 {
 	float span_w = pRoobt->Move.span_w;
 
@@ -236,6 +247,8 @@ matrix_t* RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_)
 			phase[i] -= 1;
 	}
 
+	for (int i = 0; i < 4; i++)
+		cmat_free(pRoobt->Mat.ZeroFrm2p[i]);
 	RC_Calc_FootTraj__(pRoobt, phase[0], &pos_x, &pos_y, &pos_z);
 	pRoobt->Mat.ZeroFrm2p[RC_LEG_LF] = cmat_se3(pos_x, pos_y, pos_z);
 	RC_Calc_FootTraj__(pRoobt, phase[1], &pos_x, &pos_y, &pos_z);
@@ -265,18 +278,18 @@ matrix_t* RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_)
 		cmat_free(inv);
 	}
 
-	matrix_t *m_pos[4], *result = cmat_malloc(3, 4);
+	matrix_t *m_temp;
 	for (int i = 0; i < 4; i++)
 	{
-		m_pos[i] = cmat_se3_ext_t(pRoobt->Mat.LegFrm2p[i]);
+		m_temp = cmat_se3_ext_t(pRoobt->Mat.LegFrm2p[i]);
 		for (int j = 0; j < 3; j++)
-			cmat_set(result, j, i, cmat_get(m_pos[i], j, 0));
+			cmat_set(m_angle, j, i, cmat_get(m_temp, j, 0));
+		cmat_free(m_temp);
 	}
 
-	return result;
 }
 
-matrix_t* RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos)
+void RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos, matrix_t *m_angle)
 {
 	if (m_pos->cols != 4 || m_pos->rows != 3)
 	{
@@ -285,7 +298,6 @@ matrix_t* RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos)
 	}
 
 	double rho, C3, S3;
-	matrix_t* m_angle = cmat_zeros(3, 4);
 	if (strcmp(pRoobt->Mech.type, "elbow-elbow") == 0)
 	{
 		for (int i = 0; i < 4; i++)
@@ -315,26 +327,26 @@ matrix_t* RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos)
 			//cmat_set(m_angle, 1, i, atan2(pRoobt->Mech.leg_a1 + pRoobt->Mech.leg_a2*C3, pRoobt->Mech.leg_a2*S3) - atan2(-sqrt(1 - pow(cmat_get(m_pos, 2, i) / rho, 2)), -cmat_get(m_pos, 2, i) / rho));
 		}
 	}
-	return m_angle;
 
 }
 
 
 int main()
 {
-	matrix_t *m_pos, *m_rad;
+	matrix_t *m_pos = cmat_malloc(3, 4);
+	matrix_t *m_rad = cmat_malloc(3, 4);;
 	RC_Init_Robot(&QuadrupedRobot, "elbow-elbow", 70, 300, 200, 400, 600);
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 1.0f, 0.01f, 0.5f,
 		100.0f, 0.0f, 100.0f, 0.0f,
 		0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 400.0f, 600.0f, 0.0f, 0.0f);
 
-	for(int i = 0; i < 10; i++)
+	for (int i = 0; i < 10000; i++)
 	{
-		m_pos = RC_Calc_FootTraj(&QuadrupedRobot, 0.3f + i/100.0f);
-		m_rad = RC_InvKine(&QuadrupedRobot, m_pos);
+		RC_Calc_FootTraj(&QuadrupedRobot, 0.3f, m_pos);
+		RC_InvKine(&QuadrupedRobot, m_pos, m_rad);
 		cmat_display(m_rad);
 	}
-
+	//存在内存泄漏，待解决
 	getchar();
 }

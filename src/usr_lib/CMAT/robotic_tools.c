@@ -92,5 +92,7 @@ matrix_t* cmat_se3_homo_inv(matrix_t* m)
 		cmat_set(result, 3, j, 0);
 	cmat_set(result, 3, 3, 1);
 
+	cmat_free_multi(5, R, P, R_, P_, R__);
+
 	return result;
 }

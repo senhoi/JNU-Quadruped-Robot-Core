@@ -41,13 +41,14 @@ matrix_t* cmat_from_file(int rows, int cols, const char* file) {
 
 void cmat_free(matrix_t* m) {
 	free(m->data);
+	free(m);	//结构体指针也需要被释放！！！
 }
 
 void cmat_free_multi(int num, ...) {
 	va_list argp;
 	va_start(argp, num);
 	for (int i = 0; i < num; i++) {
-		free(va_arg(argp, matrix_t*)->data);
+		cmat_free(va_arg(argp, matrix_t*));
 	}
 	va_end(argp);
 }
