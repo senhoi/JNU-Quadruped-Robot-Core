@@ -87,4 +87,31 @@ typedef struct RC_Robot_t
 
 }RC_Robot_t;
 
+void RC_Init_Robot(RC_Robot_t *pRoobt, char *type, float offset, float length1, float length2, float body_width, float body_length);
+
+void RC_Init_MovPara(RC_Robot_t *pRoobt, char *gait, double cycle, double interval, double dutyratio,
+					 double span_x, double span_y, double span_z, double span_w,
+					 double body_x, double body_y, double body_z,
+					 double body_roll, double body_pitch, double body_yaw,
+					 double pos_roll, double pos_pitch,
+					 double zero_w, double zero_l, double zero_x, double zero_y);
+
+void RC_Update_BodyPose(RC_Robot_t *pRoobt,
+						double body_x, double body_y, double body_z,
+						double body_roll, double body_pitch, double body_yaw);
+
+void RC_Update_PosPose(RC_Robot_t *pRoobt,
+					   double pos_roll, double pos_pitch);
+
+void RC_Update_ZeroPara(RC_Robot_t *pRoobt,
+						double zero_w, double zero_l, double zero_x, double zero_y);
+
+void RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle);
+
+void RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos, matrix_t *m_angle);
+
+void RC_AngleCorrect(RC_Robot_t *pRoobt, matrix_t *m_angle);
+
+void RC_DispPara(RC_Robot_t *pRoobt);
+
 #endif
