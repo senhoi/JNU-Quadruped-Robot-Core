@@ -392,6 +392,10 @@ int main()
 
 	for (int i = 0; i < 100; i++)
 	{
+		RC_Update_BodyPose(&QuadrupedRobot, 0, 0, 400, 0, 0, 0);
+		RC_Update_PosPose(&QuadrupedRobot, 0, 0);
+		RC_Update_ZeroPara(&QuadrupedRobot, 400, 600, 0, 0);
+
 		RC_Calc_FootTraj(&QuadrupedRobot, 0.3f, m_pos);
 		cmat_display(m_pos);
 		RC_InvKine(&QuadrupedRobot, m_pos, m_rad);

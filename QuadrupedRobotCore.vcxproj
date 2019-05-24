@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RC.h" />
     <ClInclude Include="src\usr_lib\CMAT\cmat.h" />
+    <ClInclude Include="src\usr_lib\RC\RC.h" />
     <ClInclude Include="src\usr_lib\TP\TP_polynomial.h" />
   </ItemGroup>
   <ItemGroup>

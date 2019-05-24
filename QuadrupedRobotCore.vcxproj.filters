@@ -36,11 +36,11 @@
     <ClInclude Include="src\usr_lib\CMAT\cmat.h">
       <Filter>头文件\CMAT</Filter>
     </ClInclude>
-    <ClInclude Include="RC.h">
-      <Filter>头文件\RC</Filter>
-    </ClInclude>
     <ClInclude Include="src\usr_lib\TP\TP_polynomial.h">
       <Filter>头文件\TP</Filter>
+    </ClInclude>
+    <ClInclude Include="src\usr_lib\RC\RC.h">
+      <Filter>头文件\RC</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

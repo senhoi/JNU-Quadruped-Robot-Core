@@ -103,7 +103,7 @@ void TP_Update_CubicPoly(TP_CubicPoly_t *pTP_CubicPoly, float final_pos, float f
 	pTP_CubicPoly->final_pos = final_pos;
 	pTP_CubicPoly->final_spd = final_spd;
 
-	TP_CalcCoeff_QuinticPoly(pTP_CubicPoly);
+	TP_CalcCoeff_CubicPoly(pTP_CubicPoly);
 }
 
 uint8_t TP_Calc_CubicPoly(TP_CubicPoly_t *pTP_CubicPoly)
