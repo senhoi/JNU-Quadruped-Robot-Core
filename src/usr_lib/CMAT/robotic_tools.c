@@ -30,8 +30,8 @@ matrix_t* cmat_se3_ry(double rad)
 	matrix_t *m = cmat_identity(4);
 
 	cmat_set(m, 0, 0, cos(rad));
-	cmat_set(m, 0, 2, -sin(rad));
-	cmat_set(m, 2, 0, sin(rad));
+	cmat_set(m, 0, 2, sin(rad));
+	cmat_set(m, 2, 0, -sin(rad));
 	cmat_set(m, 2, 2, cos(rad));
 	return m;
 }

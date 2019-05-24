@@ -34,9 +34,7 @@ void RC_Init_Robot(RC_Robot_t *pRoobt, char *type, float offset, float length1, 
 	cmat_multiply_multi(pRoobt->Mat.Base[RC_LEG_RH], 3, m_t, m_ry, m_rz);
 	cmat_free(m_t);
 
-	//cmat_free_multi(2, m_ry, m_rz);
-	cmat_free(m_ry);
-	cmat_free(m_rz);
+	cmat_free_multi(2, m_ry, m_rz);
 }
 
 void RC_Init_MovPara(RC_Robot_t *pRoobt, char *gait, double cycle, double interval, double dutyratio,
@@ -78,19 +76,13 @@ void RC_Init_MovPara(RC_Robot_t *pRoobt, char *gait, double cycle, double interv
 	m_t = cmat_se3(body_x, body_y, body_z);
 	pRoobt->Mat.RefFrm2BodyFrm = cmat_malloc(4, 4);
 	cmat_multiply_multi(pRoobt->Mat.RefFrm2BodyFrm, 4, m_t, m_rx, m_ry, m_rz);
-	//cmat_free_multi(4, m_t, m_rx, m_ry, m_rz);
-	cmat_free(m_t);
-	cmat_free(m_rx);
-	cmat_free(m_ry);
-	cmat_free(m_rz);
+	cmat_free_multi(4, m_t, m_rx, m_ry, m_rz);
 
 	m_rx = cmat_se3_rx(pos_roll);
 	m_ry = cmat_se3_ry(pos_pitch);
 	pRoobt->Mat.RefFrm2PosFrm = cmat_malloc(4, 4);
 	cmat_multiply_multi(pRoobt->Mat.RefFrm2PosFrm, 2, m_rx, m_ry);
-	//cmat_free_multi(2, m_rx, m_ry);
-	cmat_free(m_rx);
-	cmat_free(m_ry);
+	cmat_free_multi(2, m_rx, m_ry);
 
 	pRoobt->Mat.BodyFrm2LegFrm[RC_LEG_LF] = pRoobt->Mat.Base[RC_LEG_LF];
 	pRoobt->Mat.BodyFrm2LegFrm[RC_LEG_LH] = pRoobt->Mat.Base[RC_LEG_LH];
@@ -291,6 +283,7 @@ matrix_t* RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle)
 
 void RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos, matrix_t *m_angle)
 {
+	double temp1, temp2;
 	if (m_pos->cols != 4 || m_pos->rows != 3)
 	{
 		printf("Abnormal pos matrix. Program will stop to aviod accident.\n");
@@ -327,9 +320,65 @@ void RC_InvKine(RC_Robot_t *pRoobt, matrix_t *m_pos, matrix_t *m_angle)
 			//cmat_set(m_angle, 1, i, atan2(pRoobt->Mech.leg_a1 + pRoobt->Mech.leg_a2*C3, pRoobt->Mech.leg_a2*S3) - atan2(-sqrt(1 - pow(cmat_get(m_pos, 2, i) / rho, 2)), -cmat_get(m_pos, 2, i) / rho));
 		}
 	}
-
 }
 
+void RC_AngleCorrect(RC_Robot_t *pRoobt, matrix_t *m_angle)
+{
+	if (strcmp(pRoobt->Mech.type, "elbow-elbow") == 0)
+	{
+		//因为实际电机零位定义与建模零位不一致，需要将计算角度修正为实际角度，本函数需要根据电机零位的确定方式而进行修改
+		//当前零位定义为“L L”
+		cmat_set(m_angle, 0, RC_LEG_LF, cmat_get(m_angle, 0, RC_LEG_LF));
+		cmat_set(m_angle, 1, RC_LEG_LF, cmat_get(m_angle, 1, RC_LEG_LF));
+		cmat_set(m_angle, 2, RC_LEG_LF, -pi / 2 - cmat_get(m_angle, 2, RC_LEG_LF));
+
+		cmat_set(m_angle, 0, RC_LEG_LH, cmat_get(m_angle, 0, RC_LEG_LH));
+		cmat_set(m_angle, 1, RC_LEG_LH, cmat_get(m_angle, 1, RC_LEG_LH));
+		cmat_set(m_angle, 2, RC_LEG_LH, -pi / 2 - cmat_get(m_angle, 2, RC_LEG_LH));
+
+		cmat_set(m_angle, 0, RC_LEG_RF, cmat_get(m_angle, 0, RC_LEG_RF));
+		cmat_set(m_angle, 1, RC_LEG_RF, -cmat_get(m_angle, 1, RC_LEG_RF));
+		cmat_set(m_angle, 2, RC_LEG_RF, cmat_get(m_angle, 2, RC_LEG_RF) - pi / 2);
+
+		cmat_set(m_angle, 0, RC_LEG_RH, cmat_get(m_angle, 0, RC_LEG_RH));
+		cmat_set(m_angle, 1, RC_LEG_RH, -cmat_get(m_angle, 1, RC_LEG_RH));
+		cmat_set(m_angle, 2, RC_LEG_RH, cmat_get(m_angle, 2, RC_LEG_RH) - pi / 2);
+	}
+	
+}
+
+void RC_DispPara(RC_Robot_t *pRoobt)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		switch (i)
+		{
+		case RC_LEG_LF:
+			printf("\n[LEG_LF]\n");
+			break;
+		case RC_LEG_LH:
+			printf("\n[LEG_LH]\n");
+			break;
+		case RC_LEG_RF:
+			printf("\n[LEG_RF]\n");
+			break;
+		case RC_LEG_RH:
+			printf("\n[LEG_RH]\n");
+			break;
+		}
+		printf("Mat.ZeroFrm2p:\n");
+		cmat_display(pRoobt->Mat.ZeroFrm2p[i]);
+		printf("Mat.PosFrm2p:\n");
+		cmat_display(pRoobt->Mat.PosFrm2p[i]);
+		printf("Mat.RefFrm2p:\n");
+		cmat_display(pRoobt->Mat.RefFrm2p[i]);
+		printf("Mat.BodyFrm2p:\n");
+		cmat_display(pRoobt->Mat.BodyFrm2p[i]);
+		printf("Mat.LegFrm2p:\n");
+		cmat_display(pRoobt->Mat.LegFrm2p[i]);
+	}
+	
+}
 
 int main()
 {
@@ -339,14 +388,17 @@ int main()
 	RC_Init_MovPara(&QuadrupedRobot, "trot", 1.0f, 0.01f, 0.5f,
 		100.0f, 0.0f, 100.0f, 0.0f,
 		0.0f, 0.0f, 400.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 400.0f, 600.0f, 0.0f, 0.0f);
+		0.0f, 0.0f, 420.0f, 600.0f, 0.0f, 0.0f);
 
-	for (int i = 0; i < 10000; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		RC_Calc_FootTraj(&QuadrupedRobot, 0.3f, m_pos);
+		cmat_display(m_pos);
 		RC_InvKine(&QuadrupedRobot, m_pos, m_rad);
-		cmat_display(m_rad);
+		//cmat_display(m_rad);
+		RC_AngleCorrect(&QuadrupedRobot, m_rad);
+		//cmat_display(m_rad);
 	}
-	//存在内存泄漏，待解决
+
 	getchar();
 }
