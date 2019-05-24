@@ -200,7 +200,7 @@ void RC_Calc_FootTraj__(RC_Robot_t *pRoobt, double phase, double *pos_x, double 
 
 }
 
-matrix_t* RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle)
+void RC_Calc_FootTraj(RC_Robot_t *pRoobt, double phase_, matrix_t *m_angle)
 {
 	float span_w = pRoobt->Move.span_w;
 
@@ -326,8 +326,8 @@ void RC_AngleCorrect(RC_Robot_t *pRoobt, matrix_t *m_angle)
 {
 	if (strcmp(pRoobt->Mech.type, "elbow-elbow") == 0)
 	{
-		//��Ϊʵ�ʵ����λ�����뽨ģ��λ��һ�£���Ҫ������Ƕ�����Ϊʵ�ʽǶȣ���������Ҫ���ݵ����λ��ȷ����ʽ�������޸�
-		//��ǰ��λ����Ϊ��L L��
+		//因为实际电机零位定义与建模零位不一致，需要将计算角度修正为实际角度，本函数需要根据电机零位的确定方式而进行修改
+		//当前零位定义为“L L”
 		cmat_set(m_angle, 0, RC_LEG_LF, cmat_get(m_angle, 0, RC_LEG_LF));
 		cmat_set(m_angle, 1, RC_LEG_LF, cmat_get(m_angle, 1, RC_LEG_LF));
 		cmat_set(m_angle, 2, RC_LEG_LF, -pi / 2 - cmat_get(m_angle, 2, RC_LEG_LF));
